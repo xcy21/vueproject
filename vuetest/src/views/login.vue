@@ -14,7 +14,7 @@
             <el-input type="password" v-model="ruleForm.password"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
             <el-button @click="resetForm('ruleForm')">重置</el-button>
           </el-form-item>
         </el-form>
@@ -32,6 +32,8 @@ export default {
           username: 'root',
           password: '123456'
         },
+        loading: false,
+        pwdType: "password",
         rules: {
           username: [
             { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -44,25 +46,51 @@ export default {
         }
       };
     },
-    methods: {
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-            this.$axios.post('http://localhost:8081/login',this.ruleForm).then(res => {
-              console.log(res.headers)
-              console.log(res)
-            })
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
+  methods: {
+    showPwd(){
+        if (this.pwdType === "password") {
+          this.pwdType = "";
+        } else {
+        this.pwdType = "password";
+        }
       },
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
-      }
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          // let params = { JSON.stringify(params)
+          //   username: this.ruleForm.username,
+          //   password: this.ruleForm.password
+          // }
+          // alert('submit!');
+          this.loading = true
+          this.$axios.post('http://localhost:8081/login',this,this.ruleForm).then(res => {
+            console.log(res);
+            alert(res.data.msg);
+            let code = res.data.code
+            if (code == 200){
+              this.$router.push({
+                path: "/success",
+                query: { data: res.data.msg }
+              })
+            }else{
+              this.$router.push({
+                path: "/error",
+                query: { data:res.data.msg }
+              })
+            }
+          }).catch(message => {
+            console.log(message);
+          })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
     }
+  }
 }
 </script>
 
