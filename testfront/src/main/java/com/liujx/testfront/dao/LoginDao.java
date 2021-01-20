@@ -19,5 +19,4 @@ public interface LoginDao {
 
     Login selectByUsername(String username);
 
-    int selectCountByUsername(String username);
 }

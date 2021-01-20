@@ -6,20 +6,23 @@ import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
 import router from './router'
+import store from './store'
 
 Vue.use(Element)
-axios.interceptors.request.use(config => {
-  if(config.method == 'post')
-  config.headers['Content-Type'] = 'application/json'
-  return config
-})
-Vue.prototype.$axios = axios
+
+// axios.interceptors.request.use(config => {
+//   if(config.method == 'post')
+//   config.headers['Content-Type'] = 'application/json'
+//   return config
+// })
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

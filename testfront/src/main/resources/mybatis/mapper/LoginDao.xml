@@ -67,4 +67,5 @@
     from login
     where username = #{username,jdbcType=VARCHAR}
   </select>
+
 </mapper>

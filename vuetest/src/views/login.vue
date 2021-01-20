@@ -8,13 +8,24 @@
       <el-main>
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
           <el-form-item label="用户名" prop="username">
-            <el-input v-model="ruleForm.username"></el-input>
+            <el-input v-model="ruleForm.username">
+              <span slot="prefix">
+                <svg-icon icon-class="user" class="color-main"></svg-icon>
+              </span>
+            </el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
-            <el-input type="password" v-model="ruleForm.password"></el-input>
+            <el-input type="password" v-model="ruleForm.password">
+            <span slot="prefix">
+              <svg-icon icon-class="password" class="color-main"></svg-icon>
+            </span>
+            <span slot="suffix" @click="showPwd">
+              <svg-icon icon-class="eye" class="color-main"></svg-icon>
+            </span>
+            </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+            <el-button type="primary" @click="submitForm">登录</el-button>
             <el-button @click="resetForm('ruleForm')">重置</el-button>
           </el-form-item>
         </el-form>
@@ -54,8 +65,8 @@ export default {
         this.pwdType = "password";
         }
       },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+    submitForm() {
+      this.$refs.ruleForm.validate(valid => {
         if (valid) {
           // let params = { JSON.stringify(params)
           //   username: this.ruleForm.username,
@@ -63,23 +74,24 @@ export default {
           // }
           // alert('submit!');
           this.loading = true
-          this.$axios.post('http://localhost:8081/login',this,this.ruleForm).then(res => {
-            console.log(res);
-            alert(res.data.msg);
-            let code = res.data.code
+          // this.$axios.post('http://localhost:8081/login',this,this.ruleForm).then(res => {
+          //   console.log(res);
+          this.$store.dispatch("Login", this.ruleForm).then(response => {
+            this.loading = false;
+            let code = response.data.code;
             if (code == 200){
+              this.$router.push({path: '/success',
+              query: { data: response.data.msg }
+              });
+            }else {
               this.$router.push({
-                path: "/success",
-                query: { data: res.data.msg }
-              })
-            }else{
-              this.$router.push({
-                path: "/error",
-                query: { data:res.data.msg }
-              })
+                path: '/error',
+                query: { message: response.data.msg }
+              });
             }
+            
           }).catch(message => {
-            console.log(message);
+            this.loading = false;
           })
         } else {
           console.log('error submit!!');
